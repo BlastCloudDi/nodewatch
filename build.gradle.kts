@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(ktorLibs.plugins.ktor)
+    kotlin("plugin.serialization") version "2.2.0"
 }
 
 group = "com.blastclouddi"
@@ -15,7 +16,9 @@ kotlin {
     jvmToolchain(21)
 }
 dependencies {
+    implementation(ktorLibs.serialization.kotlinx.json)
     implementation(ktorLibs.server.config.yaml)
+    implementation(ktorLibs.server.contentNegotiation)
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
     implementation(libs.logback.classic)

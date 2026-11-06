@@ -3,4 +3,5 @@ ktor:
     port: 8080
   application:
     modules:
+      - com.blastclouddi.SerializationKt.configureSerialization
       - com.blastclouddi.RoutingKt.configureRouting
