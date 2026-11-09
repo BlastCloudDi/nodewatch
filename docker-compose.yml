@@ -1,8 +1,34 @@
 services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nodewatch
+      POSTGRES_PASSWORD: nodewatch
+      POSTGRES_DB: nodewatch
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nodewatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   app:
     build: .
     ports:
       - "8080:8080"
     environment:
-      - PORT=8080
+      PORT: 8080
+      DB_URL: "jdbc:postgresql://db:5432/nodewatch"
+      DB_USER: nodewatch
+      DB_PASSWORD: nodewatch
+    depends_on:
+      db:
+        condition: service_healthy
     restart: unless-stopped
+
+volumes:
+  pgdata:

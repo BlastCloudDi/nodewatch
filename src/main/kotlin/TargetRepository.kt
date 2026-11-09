@@ -1,28 +1,88 @@
 package com.blastclouddi
 
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.transactions.transaction
+
 object TargetRepository {
-    // Храним цели в изменяемом списке
-    private val targets = mutableListOf<Target>()
+    private val inMemoryTargets = mutableListOf<Target>()
+    private var useDatabase = false
 
-    // Получить все цели
-    fun getAll(): List<Target> = targets.toList()
+    fun enableDatabase() {
+        useDatabase = true
+    }
 
-    // Добавить новую цель
+    fun getAll(): List<Target> {
+        return if (useDatabase) {
+            transaction {
+                Targets.selectAll().map { row ->
+                    Target(
+                        id = row[Targets.id],
+                        name = row[Targets.name],
+                        url = row[Targets.url],
+                        checkIntervalSeconds = row[Targets.checkIntervalSeconds]
+                    )
+                }
+            }
+        } else {
+            inMemoryTargets.toList()
+        }
+    }
+
     fun add(target: Target) {
-        targets.add(target)
+        if (useDatabase) {
+            transaction {
+                Targets.insert {
+                    it[id] = target.id
+                    it[name] = target.name
+                    it[url] = target.url
+                    it[checkIntervalSeconds] = target.checkIntervalSeconds
+                }
+            }
+        } else {
+            inMemoryTargets.add(target)
+        }
     }
 
-    // Удалить цель по ID (возвращает true, если удаление прошло успешно)
     fun remove(id: String): Boolean {
-        return targets.removeIf { it.id == id }
+        return if (useDatabase) {
+            transaction {
+                Targets.deleteWhere { Targets.id eq id } > 0
+            }
+        } else {
+            inMemoryTargets.removeIf { it.id == id }
+        }
     }
 
-    // Найти цель по ID
     fun findById(id: String): Target? {
-        return targets.find { it.id == id }
+        return if (useDatabase) {
+            transaction {
+                Targets.selectAll().where { Targets.id eq id }
+                    .map { row ->
+                        Target(
+                            id = row[Targets.id],
+                            name = row[Targets.name],
+                            url = row[Targets.url],
+                            checkIntervalSeconds = row[Targets.checkIntervalSeconds]
+                        )
+                    }
+                    .singleOrNull()
+            }
+        } else {
+            inMemoryTargets.find { it.id == id }
+        }
     }
 
     fun clear() {
-        targets.clear()
+        if (useDatabase) {
+            transaction {
+                Targets.deleteAll()
+            }
+        } else {
+            inMemoryTargets.clear()
+        }
     }
 }

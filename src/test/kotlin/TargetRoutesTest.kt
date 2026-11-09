@@ -16,7 +16,10 @@ class TargetRoutesTest {
 
     @Test
     fun `get targets returns empty list`() = testApplication {
-        configure()
+        application {
+            configureSerialization()
+            configureRouting()
+        }
         TargetRepository.clear()
 
         val response = client.get("/targets")
@@ -27,7 +30,10 @@ class TargetRoutesTest {
 
     @Test
     fun `post target creates target`() = testApplication {
-        configure()
+        application {
+            configureSerialization()
+            configureRouting()
+        }
         TargetRepository.clear()
 
         val response = client.post("/targets") {
@@ -55,7 +61,10 @@ class TargetRoutesTest {
 
     @Test
     fun `post target with invalid interval returns bad request`() = testApplication {
-        configure()
+        application {
+            configureSerialization()
+            configureRouting()
+        }
         TargetRepository.clear()
 
         val response = client.post("/targets") {

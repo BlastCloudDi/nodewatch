@@ -10,15 +10,19 @@ class ServerTest {
 
     @Test
     fun `test root endpoint`() = testApplication {
-        // loads default configuration
-        configure()
-        // verify server root returns 200
+        application {
+            configureSerialization()
+            configureRouting()
+        }
         assertEquals(HttpStatusCode.OK, client.get("/").status)
     }
 
     @Test
     fun `test health endpoint`() = testApplication {
-        configure()
+        application {
+            configureSerialization()
+            configureRouting()
+        }
 
         val response = client.get("/health")
 

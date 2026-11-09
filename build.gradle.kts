@@ -23,6 +23,15 @@ dependencies {
     implementation(ktorLibs.server.netty)
     implementation(libs.logback.classic)
 
+    implementation("org.jetbrains.exposed:exposed-core:0.56.0")
+    implementation("org.jetbrains.exposed:exposed-dao:0.56.0")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.56.0")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.56.0")
+
+    implementation("org.postgresql:postgresql:42.7.4")
+
+    implementation("com.zaxxer:HikariCP:5.1.0")
+
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
 }
