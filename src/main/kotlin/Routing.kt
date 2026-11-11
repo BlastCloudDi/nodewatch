@@ -25,6 +25,25 @@ fun Application.configureRouting() {
                 call.respond(TargetRepository.getAll())
             }
 
+            get("/{id}/history") {
+                val id = call.parameters["id"]
+
+                if (id == null) {
+                    call.respond(HttpStatusCode.BadRequest, ErrorResponse("Missing target id"))
+                    return@get
+                }
+
+                val target = TargetRepository.findById(id)
+
+                if (target == null) {
+                    call.respond(HttpStatusCode.NotFound, ErrorResponse("Target not found"))
+                    return@get
+                }
+
+                val history = CheckResultRepository.getHistoryForTarget(id)
+                call.respond(history)
+            }
+
             post {
                 val request = call.receive<CreateTargetRequest>()
 
