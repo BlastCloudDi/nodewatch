@@ -1,31 +1,80 @@
-# nodewatch
+# NodeWatch
 
-This project was created using the [Ktor Project Generator](https://start.ktor.io).
+Простой сервис мониторинга доступности узлов (HTTP-эндпоинтов). Периодически проверяет указанные цели и сохраняет историю проверок.
 
-Here are some useful links to get you started:
- * [Ktor Documentation](https://ktor.io/docs/home.html)
- * [Ktor GitHub page](https://github.com/ktorio/ktor)
- * [Ktor Slack chat](https://app.slack.com/client/T09229ZC6/C0A974TJ9). [Request an invite](https://surveys.jetbrains.com/s3/kotlin-slack-sign-up).
+## Возможности
 
+- 🎯 Добавление целей мониторинга через REST API
+- 🔄 Фоновая проверка доступности через корутины Kotlin
+- 📊 Хранение истории проверок в PostgreSQL
+- 🐳 Полная контейнеризация через Docker Compose
+- ✅ Покрытие тестами
 
-## Features
-Here's a list of features included in this project:
+## Стек технологий
 
-| Name | Description |
-|------|-------------|
+- **Kotlin** + **Ktor 3** – серверный фреймворк
+- **PostgreSQL 16** – база данных
+- **Exposed** – типобезопасный ORM от JetBrains
+- **HikariCP** – пул соединений с БД
+- **kotlinx.serialization** – JSON-сериализация
+- **Docker** + **Docker Compose** – контейнеризация
+- **JUnit** + **ktor-server-test-host** – тестирование
 
-## Building & Running
-To build or run the project, use one of the following tasks:
+## Быстрый старт
 
+### Требования
 
-| Task | Description |
-|------|-------------|
-| `./gradlew test`    | Run the tests     |
-| `./gradlew build`   | Build the project |
-| `./gradlew run`     | Run the server    |
+- Docker и Docker Compose
 
-If the server starts successfully, you'll see the following output:
+### Запуск
+
+```bash
+git clone https://github.com/BlastCloudDi/nodewatch.git
+cd nodewatch
+docker-compose up --build
 ```
-2024-12-04 14:32:45.584 [main] INFO  Application - Application started in 0.303 seconds.
-2024-12-04 14:32:45.682 [main] INFO  Application - Responding at http://0.0.0.0:8080
+
+Сервер будет доступен на `http://localhost:8080`.
+
+### Остановка
+
+```bash
+    docker-compose down
 ```
+
+
+## API
+
+- `GET /health` – проверка работоспособности
+- `GET /targets` – список целей
+- `POST /targets` – добавить цель
+- `GET /targets/{id}` – получить цель
+- `DELETE /targets/{id}` – удалить цель
+- `GET /targets/{id}/history` – история проверок
+
+## Архитектура
+
+    src/main/kotlin/
+    ├── main.kt                  # Точка входа
+    ├── Routing.kt               # HTTP-маршруты
+    ├── Serialization.kt         # Настройка JSON
+    ├── Databases.kt             # Инициализация БД + жизненный цикл
+    ├── Database.kt              # Описание таблиц Exposed
+    ├── Target.kt                # Модель цели
+    ├── TargetDtos.kt            # DTO для запросов/ответов API
+    ├── TargetRepository.kt      # Работа с целями (БД / in-memory)
+    ├── CheckResult.kt           # Модель результата проверки
+    ├── CheckResultRepository.kt # Работа с историей проверок
+    ├── HealthChecker.kt         # Логика пинга цели
+    └── BackgroundWorker.kt      # Фоновый воркер на корутинах
+
+## Тесты
+```bash
+    ./gradlew test
+```
+Покрытие:
+
+- Эндпоинт Health
+- CRUD API для целей
+- `HealthChecker` с мокированием HTTP-клиента
+- Эндпоинт истории проверок
