@@ -5,6 +5,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.*
+import io.ktor.server.http.content.*
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -12,9 +13,7 @@ data class HealthResponse(val status: String)
 
 fun Application.configureRouting() {
     routing {
-        get("/") {
-            call.respondText("Hello, World!")
-        }
+        staticResources("/", "static")
 
         get("/health") {
             call.respond(HealthResponse(status = "ok"))

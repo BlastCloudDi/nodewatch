@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NodeWatch – Мониторинг узлов</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>NodeWatch</h1>
+        <p>Мониторинг доступности узлов</p>
+    </header>
+
+    <section class="add-target">
+        <h2>Добавить цель</h2>
+        <form id="addTargetForm">
+            <input type="text" id="targetName" placeholder="Название (например, Google)" required>
+            <input type="text" id="targetUrl" placeholder="URL (например, https://google.com)" required>
+            <input type="number" id="targetInterval" placeholder="Интервал (сек)" value="60" min="10" required>
+            <button type="submit">Добавить</button>
+        </form>
+    </section>
+
+    <section class="targets-list">
+        <h2>Цели мониторинга</h2>
+        <div id="targetsContainer">
+            <p class="loading">Загрузка...</p>
+        </div>
+    </section>
+
+    <section class="history" id="historySection" style="display: none;">
+        <h2>История проверок: <span id="historyTargetName"></span></h2>
+        <button id="closeHistory">Закрыть</button>
+        <div id="historyContainer"></div>
+    </section>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
